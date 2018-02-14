@@ -9,7 +9,6 @@ using namespace std;
 ifstream fin("return.txt"); 
 
 struct Lexeme
-
 {
 	int type;
 	string lex;
@@ -58,111 +57,63 @@ void description()
 		fgl(lexeme);
 		if (lexeme.lex == "=")
 		{
-
 			fgl(lexeme);
-
 			expression();
-
 		}
-
 		while (lexeme.lex == ",")
-
 		{
-
 			fgl(lexeme);
-
 			if (lexeme.type != 2) error();
-
 			fgl(lexeme);
-
 			if (lexeme.lex == "=")
-
 			{
-
 				fgl(lexeme);
-
 				expression();
-
 			}
-
 		}
-
 		if (lexeme.lex != ";") error();
-
 		fgl(lexeme);
-
 		return;
-
 	}
-
 	else error();
-
 }
-
 void compositeoper()
-
 {
-
 	if (lexeme.lex != "{") error();
-
 	fgl(lexeme);
-
 	do
-
 	{
-
 		oper();
-
 	} while (lexeme.lex != "}");
-
 }
-
 void oper()
-
 {
-
 	if (lexeme.lex == "cinout")
-
 	{
 
 	}
-
 	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int")
-
 	{
-
 		description();
-
 	}
-
 	else if (lexeme.lex == "for")
-
 	{
 
 	}
-
 	else if (lexeme.lex == "do")
-
 	{
 
 	}
-
 	else if (lexeme.lex == "{")
-
 	{
 
 	}
-
 	else if (/*expression*/true)
-
 	{
 
 	}
-
 }
-
 void expression()
-
 {
 
 }
@@ -332,11 +283,7 @@ error();
 */
 
 int main()
-
 {
-
 	fgl(lexeme);
-
 	program();
-
 }
