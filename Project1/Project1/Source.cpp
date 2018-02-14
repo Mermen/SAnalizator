@@ -6,7 +6,7 @@
 
 using namespace std;
 
-ifstream fin("return.txt"); //ôàéë èç ëåêñè÷åñêîãî àíàëèçàòîðà
+ifstream fin("return.txt"); 
 
 struct Lexeme
 
@@ -15,7 +15,7 @@ struct Lexeme
 	string lex;
 } lexeme, lexeme1;
 
-void fgl(Lexeme lexeme) //ñ÷èòûâàíèå ëåêñåìû èç ôàéëà
+void fgl(Lexeme lexeme)
 {
 	if (!fin.eof())
 	{
