@@ -6,7 +6,7 @@
 
 using namespace std;
 
-ifstream fin("return.txt"); //файл из лексического анализатора
+ifstream fin("return.txt");
 
 struct Lexeme
 {
@@ -14,7 +14,7 @@ struct Lexeme
 	string lex;
 } lexeme, lexeme1;
 
-void fgl(Lexeme lexeme) //считывание лексемы из файла
+void fgl(Lexeme lexeme)
 {
 	if (!fin.eof())
 	{
@@ -118,89 +118,6 @@ void expression()
 {
 
 }
-/*void logicValue()
-{
-	if (lexeme.type == 1 && (lexeme.lex == "true" || lexeme.lex == "false")) 
-	{
-		fgl(lexeme); 
-		return; 
-	}
-	error();
-}
-void increment()
-{
-	if (lexeme.type == 4 && (lexeme.lex == "++" || lexeme.lex == "--"))
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void assignment()
-{
-	if (lexeme.type == 4 && lexeme.lex == "=")
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void multiplication()
-{
-	if (lexeme.type == 4 && (lexeme.lex == "*" || lexeme.lex == "/" || lexeme.lex == "%" || lexeme.lex == "&&")) //сюда нужно засунуть div
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void addition()
-{
-	if (lexeme.type == 4 && (lexeme.lex == "+" || lexeme.lex == "-" || lexeme.lex == "||"))
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void type()
-{
-	if (lexeme.type == 2 && (lexeme.lex == "int" || lexeme.lex == "bool" || lexeme.lex == "double"))
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void name()
-{
-	if (lexeme.type == 2)
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void direction()
-{
-	if (lexeme.type == 1 && (lexeme.lex == "to" || lexeme.lex == "downto"))
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-void exponentiation()
-{
-	if (lexeme.type == 4 && lexeme.lex == "^")
-	{
-		fgl(lexeme);
-		return;
-	}
-	error();
-}
-*/
-
 
 int main()
 {
