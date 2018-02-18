@@ -10,7 +10,7 @@ ifstream fin("return.txt");
 
 struct Lexeme
 {
-	int type, str;
+	int type = 0, str;
 	string lex;
 } lexeme, lexeme1;
 
@@ -38,10 +38,8 @@ void error()
 
 void program()
 {
-	while (lexeme.lex != "main")
+	while (lexeme.lex != "(")
 		description();
-	fgl(lexeme);
-	if (lexeme.lex != "(") error();
 	fgl(lexeme);
 	if (lexeme.lex != ")") error();
 	fgl(lexeme);
@@ -53,9 +51,15 @@ void description()
 	{
 		fgl(lexeme);
 		if (lexeme.lex == "main")
-			return;
+		{
+			fgl(lexeme);
+			if (lexeme.lex == "(")
+				return;
+			else goto mark47;
+		}
 		if (lexeme.type != 2) error();
 		fgl(lexeme);
+		mark47:
 		if (lexeme.lex == "=")
 		{
 			fgl(lexeme);
@@ -89,32 +93,97 @@ void compositeoper()
 }
 void oper()
 {
-	if (lexeme.lex == "cinout")
+	if (lexeme.lex == "cinout") // Оператор ввода-вывода
 	{
-
+		cinout();
 	}
-	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int")
+	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int") //Описание
 	{
 		description();
 	}
-	else if (lexeme.lex == "for")
+	else if (lexeme.lex == "for")//Спец. оператор cfor/pfor
 	{
 
 	}
-	else if (lexeme.lex == "do")
+	else if (lexeme.lex == "do")//Спец. оператор dowhile
 	{
-
+		dowhile();
 	}
-	else if (lexeme.lex == "{")
+	else if (lexeme.lex == "{")//Составной оператор
 	{
-
+		compositeoper();
 	}
-	else if (/*expression*/true)
+	else if (lexeme.type == 2 ||
+		lexeme.type == 3 || lexeme.lex == "+" || lexeme.lex == "-" || 
+		lexeme.lex == "!" || lexeme.lex == "(" ||
+		lexeme.lex == "true" || lexeme.lex == "false")//Оператор выражения
 	{
-
+		expression();
 	}
 }
 void expression()
+{
+	if (lexeme.type != 2)
+		expression1();
+	else
+	{
+		fgl(lexeme1);
+		if (lexeme1.lex == "=")
+		{
+			lexeme1.type = 0;
+			fgl(lexeme);
+			expression();
+		}
+		else expression1();
+	}
+}
+void expression1()
+{
+	simpleexpression();
+	while (lexeme.lex == ">" || lexeme.lex == "<" || lexeme.lex == "!=" || lexeme.lex == ">=" || lexeme.lex == "<+" || lexeme.lex == "==")
+	{
+		fgl(lexeme);
+		simpleexpression();
+	}
+}
+void simpleexpression()
+{
+	term();
+	while (lexeme.lex == "+" || lexeme.lex == "-" || lexeme.lex == "||")
+	{
+		fgl(lexeme);
+		term();
+	}
+}
+void term()
+{
+	atom1();
+	while (lexeme.lex == "*" || lexeme.lex == "/" || lexeme.lex == "&&" || lexeme.lex == "div" || lexeme.lex == "%")
+	{
+		fgl(lexeme);
+		atom1();
+	}
+}
+void atom1()
+{
+	atom();
+	if (lexeme.lex == "^")
+	{
+		fgl(lexeme);
+		atom();
+	}
+	if (lexeme.lex == "++" || lexeme.lex == "--")
+		fgl(lexeme);	
+}
+void atom()
+{
+
+}
+void dowhile()
+{
+
+}
+void cinout()
 {
 
 }
