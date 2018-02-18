@@ -163,6 +163,8 @@ void expression()
 		}
 		else expression1();
 	}
+	if (lexeme.lex != ";") error();
+	fgl(lexeme);
 }
 void expression1()
 {
