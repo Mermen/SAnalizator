@@ -46,7 +46,7 @@ void fgl(Lexeme &lexeme)
 	}
 	else
 	{
-		cout << "Error! File is empty.";
+		cout << "Error! File is empty." << endl;
 		system("pause");
 		exit(1);
 	}
@@ -65,7 +65,7 @@ void program()
 	if (lexeme.lex != ")") error();
 	fgl(lexeme);
 	compositeoper();
-	cout << "There are no errors. The code is correct.";
+	cout << "There are no errors. The code is correct." << endl;
 	system("pause");
 }
 void description()
@@ -145,6 +145,8 @@ void oper()
 		lexeme.lex == "true" || lexeme.lex == "false")//Оператор выражения
 	{
 		expression();
+		if (lexeme.lex != ";") error();
+		fgl(lexeme);
 	}
 	else error();
 }
@@ -163,8 +165,6 @@ void expression()
 		}
 		else expression1();
 	}
-	if (lexeme.lex != ";") error();
-	fgl(lexeme);
 }
 void expression1()
 {
@@ -280,6 +280,7 @@ void cinout()
 		element();
 	} while (lexeme.lex == "<<" || lexeme.lex == ">>");
 	if (lexeme.lex != ";") error();
+	fgl(lexeme);
 }
 void element()
 {
