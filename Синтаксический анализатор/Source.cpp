@@ -10,7 +10,7 @@ ifstream fin("return.txt");
 
 struct Lexeme
 {
-	int type;
+	int type, str;
 	string lex;
 } lexeme, lexeme1;
 
@@ -20,7 +20,7 @@ void fgl(Lexeme lexeme)
 	{
 		fin >> lexeme.lex;
 		fin >> lexeme.type;
-		fin >> lexeme.type;
+		fin >> lexeme.str;
 	}
 	else
 	{
@@ -31,7 +31,7 @@ void fgl(Lexeme lexeme)
 }
 void error()
 {
-	cout << "FATAL ERROR!!! Run away! There are 3 seconds before the exlosive. 2... 1..." << endl;
+	cout << "There is a FATAL ERROR in string "<< lexeme.str <<"!!! Run away! There are 3 seconds before the exlosive. 2... 1..." << endl;
 	system("pause");
 	exit(1);
 }
