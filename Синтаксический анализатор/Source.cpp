@@ -14,6 +14,28 @@ struct Lexeme
 	string lex;
 } lexeme, lexeme1;
 
+void fgl(Lexeme lexeme);
+void error();
+void program();
+void description();
+void compositeoper();
+void oper();
+void expression();
+void expression1();
+void simpleexpression();
+void term();
+void atom1();
+void atom();
+void specialatom();
+void constant();
+void dowhile();
+void cinout();
+void element();
+void operfor();
+void cfor1();
+void cfor2();
+void pfor();
+
 void fgl(Lexeme lexeme)
 {
 	if (!fin.eof())
@@ -35,7 +57,6 @@ void error()
 	system("pause");
 	exit(1);
 }
-
 void program()
 {
 	while (lexeme.lex != "(")
@@ -45,6 +66,7 @@ void program()
 	fgl(lexeme);
 	compositeoper();
 	cout << "There are no errors. The code is correct.";
+	system("pause");
 }
 void description()
 {
