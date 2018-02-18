@@ -113,6 +113,7 @@ void compositeoper()
 	{
 		oper();
 	} while (lexeme.lex != "}");
+	fgl(lexeme);
 }
 void oper()
 {
@@ -156,7 +157,8 @@ void expression()
 		expression1();
 	else
 	{
-		fgl(lexeme1);
+		if (lexeme1.type == 0)
+			fgl(lexeme1);
 		if (lexeme1.lex == "=")
 		{
 			lexeme1.type = 0;
@@ -293,8 +295,16 @@ void element()
 	else if (lexeme.lex == "<<")
 	{
 		fgl(lexeme);
-		if (lexeme.lex == "endl" || lexeme.type == 7)
+		if (lexeme.lex == "endl")
 			fgl(lexeme);
+		else if (lexeme.lex == "\"")
+		{
+			fgl(lexeme);
+			if (lexeme.type != 7) error();
+			fgl(lexeme);
+			if (lexeme.lex != "\"") error();
+			fgl(lexeme);
+		}
 		else expression();
 	}
 	else error();
