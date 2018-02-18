@@ -24,7 +24,7 @@ void fgl(Lexeme lexeme)
 	}
 	else
 	{
-		cout << "File is empty.";
+		cout << "Error! File is empty.";
 		system("pause");
 		exit(1);
 	}
@@ -44,6 +44,7 @@ void program()
 	if (lexeme.lex != ")") error();
 	fgl(lexeme);
 	compositeoper();
+	cout << "There are no errors. The code is correct.";
 }
 void description()
 {
@@ -95,6 +96,7 @@ void oper()
 {
 	if (lexeme.lex == "cinout") // Оператор ввода-вывода
 	{
+		fgl(lexeme);
 		cinout();
 	}
 	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int") //Описание
@@ -103,10 +105,12 @@ void oper()
 	}
 	else if (lexeme.lex == "for")//Спец. оператор cfor/pfor
 	{
-
+		fgl(lexeme);
+		operfor();
 	}
 	else if (lexeme.lex == "do")//Спец. оператор dowhile
 	{
+		fgl(lexeme);
 		dowhile();
 	}
 	else if (lexeme.lex == "{")//Составной оператор
@@ -188,8 +192,8 @@ void atom()
 	{
 		if (lexeme1.type != 0)
 		{
-			lexeme1.type = 0;
 			lexeme = lexeme1;
+			lexeme1.type = 0;
 		}
 		else fgl(lexeme);
 	}
@@ -234,11 +238,92 @@ void constant()
 }
 void dowhile()
 {
-
+	oper();
+	if (lexeme.lex != "while") error();
+	fgl(lexeme);
+	if (lexeme.lex != "(") error();
+	fgl(lexeme);
+	expression();
+	if (lexeme.lex != ")") error();
+	fgl(lexeme);
+	if (lexeme.lex != ";") error();
+	fgl(lexeme);
 }
 void cinout()
 {
-
+	do {
+		element();
+	} while (lexeme.lex == "<<" || lexeme.lex == ">>");
+	if (lexeme.lex != ";") error();
+}
+void element()
+{
+	if (lexeme.lex == ">>")
+	{
+		fgl(lexeme);
+		if (lexeme.type != 2) error();
+		fgl(lexeme);
+	}
+	else if (lexeme.lex == "<<")
+	{
+		fgl(lexeme);
+		if (lexeme.lex == "endl" || lexeme.type == 7)
+			fgl(lexeme);
+		else expression();
+	}
+	else error();
+}
+void operfor()
+{
+	if (lexeme.lex != "(") error();
+	fgl(lexeme);
+	if (lexeme.lex == "int" || lexeme.lex == "double" || lexeme.lex == "bool")
+		cfor1();
+	else if (lexeme.type == 2)
+	{
+		fgl(lexeme1);
+		if (lexeme1.lex == ":=")
+		{
+			lexeme1.type = 0;
+			fgl(lexeme);
+			pfor();
+		}
+		else cfor2();
+	}
+	else cfor2();
+	if (lexeme.lex != ")") error();
+	fgl(lexeme);
+	oper();
+	if (lexeme.lex == "else")
+	{
+		fgl(lexeme);
+		oper();
+	}
+}
+void cfor1()
+{
+	description();
+	expression();
+	if (lexeme.lex != ";") error();
+	fgl(lexeme);
+	expression();
+}
+void cfor2()
+{
+	expression();
+	if (lexeme.lex != ";") error();
+	fgl(lexeme);
+	expression(); 
+	if (lexeme.lex != ";") error();
+	fgl(lexeme);
+	expression();
+}
+void pfor()
+{
+	expression();
+	if (lexeme.lex != "to" && lexeme.lex != "downto") error();
+	fgl(lexeme);
+	expression();
 }
 
 int main()
