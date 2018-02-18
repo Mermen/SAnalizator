@@ -177,7 +177,60 @@ void atom1()
 }
 void atom()
 {
-
+	if (lexeme.lex == "(")
+	{
+		fgl(lexeme);
+		expression();
+		if (lexeme.lex != ")") error();
+		fgl(lexeme);
+	}
+	else if (lexeme.type == 2)
+	{
+		if (lexeme1.type != 0)
+		{
+			lexeme1.type = 0;
+			lexeme = lexeme1;
+		}
+		else fgl(lexeme);
+	}
+	else specialatom();
+}
+void specialatom()
+{
+	if (lexeme.lex == "!")
+	{
+		fgl(lexeme);
+		atom();
+		return;
+	}
+	else if (lexeme.lex == "true" || lexeme.lex == "false")
+	{
+		fgl(lexeme);
+		return;
+	}
+	else constant();
+}
+void constant()
+{
+	if (lexeme.lex == "+" || lexeme.lex == "-")
+	{
+		fgl(lexeme);
+		if (lexeme.type != 3) error();
+		fgl(lexeme);
+		return;
+	}
+	else if (lexeme.type == 3)
+	{
+		fgl(lexeme);
+		if (lexeme.lex == ".")
+		{
+			fgl(lexeme);
+			if (lexeme.type != 3) error();
+			fgl(lexeme);
+			return;
+		}
+	}
+	else error();
 }
 void dowhile()
 {
