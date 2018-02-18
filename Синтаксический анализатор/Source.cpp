@@ -14,7 +14,7 @@ struct Lexeme
 	string lex;
 } lexeme, lexeme1;
 
-void fgl(Lexeme lexeme);
+void fgl(Lexeme &lexeme);
 void error();
 void program();
 void description();
@@ -36,7 +36,7 @@ void cfor1();
 void cfor2();
 void pfor();
 
-void fgl(Lexeme lexeme)
+void fgl(Lexeme &lexeme)
 {
 	if (!fin.eof())
 	{
@@ -146,6 +146,7 @@ void oper()
 	{
 		expression();
 	}
+	else error();
 }
 void expression()
 {
