@@ -6,14 +6,16 @@
 
 using namespace std;
 
-ifstream fin("c:\\Users\\menmen\\source\\repos\\Project1\\Project1\\return.txt");
+ifstream fin("C:\\Users\\User\\Documents\\Visual Studio 2017\\Projects\\Лексическиий анализатор\\Лексическиий анализатор\\return.txt");
+
 
 struct Lexeme
 {
 	int type = 0, str = 0;
-	string lex;
+	char lex[10000];
 } lexeme, lexeme1;
 int str = 0;
+char enter;
 
 
 void fgl(Lexeme &lexeme);
@@ -43,9 +45,10 @@ void fgl(Lexeme &lexeme)
 	if (!fin.eof())
 	{
 		str = lexeme.str;
-		fin >> lexeme.lex;
-		fin >> lexeme.type;
 		fin >> lexeme.str;
+		fin >> lexeme.type;
+		fin.get();
+		fin.getline(lexeme.lex, 10000);		
 	}
 	else
 	{
@@ -62,10 +65,10 @@ void error()
 }
 void program()
 {
-	while (lexeme.lex != "(")
+	while (strcmp(lexeme.lex, "("))
 		description();
 	fgl(lexeme);
-	if (lexeme.lex != ")") error();
+	if (strcmp(lexeme.lex, ")")) error();
 	fgl(lexeme);
 	compositeoper();
 	cout << "There are no errors. The code is correct." << endl;
@@ -73,36 +76,36 @@ void program()
 }
 void description()
 {
-	if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int")
+	if (!strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool") || !strcmp(lexeme.lex, "int"))
 	{
 		fgl(lexeme);
-		if (lexeme.lex == "main")
+		if (!strcmp(lexeme.lex, "main"))
 		{
 			fgl(lexeme);
-			if (lexeme.lex == "(")
+			if (!strcmp(lexeme.lex, "("))
 				return;
 			else goto mark47;
 		}
 		if (lexeme.type != 2) error();
 		fgl(lexeme);
 		mark47:
-		if (lexeme.lex == "=")
+		if (!strcmp(lexeme.lex, "="))
 		{
 			fgl(lexeme);
 			expression();
 		}
-		while (lexeme.lex == ",")
+		while (!strcmp(lexeme.lex, ","))
 		{
 			fgl(lexeme);
 			if (lexeme.type != 2) error();
 			fgl(lexeme);
-			if (lexeme.lex == "=")
+			if (!strcmp(lexeme.lex, "="))
 			{
 				fgl(lexeme);
 				expression();
 			}
 		}
-		if (lexeme.lex != ";") error();
+		if (strcmp(lexeme.lex, ";")) error();
 		fgl(lexeme);
 		return;
 	}
@@ -110,46 +113,46 @@ void description()
 }
 void compositeoper()
 {
-	if (lexeme.lex != "{") error();
+	if (strcmp(lexeme.lex, "{")) error();
 	fgl(lexeme);
 	do
 	{
 		oper();
-	} while (lexeme.lex != "}");
+	} while (!strcmp(lexeme.lex, "}"));
 	fgl(lexeme);
 }
 void oper()
 {
-	if (lexeme.lex == "cinout") // Оператор ввода-вывода
+	if (!strcmp(lexeme.lex, "cinout")) // Оператор ввода-вывода
 	{
 		fgl(lexeme);
 		cinout();
 	}
-	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int") //Описание
+	else if (!strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool") || !strcmp(lexeme.lex, "int")) //Описание
 	{
 		description();
 	}
-	else if (lexeme.lex == "for")//Спец. оператор cfor/pfor
+	else if (!strcmp(lexeme.lex, "for"))//Спец. оператор cfor/pfor
 	{
 		fgl(lexeme);
 		operfor();
 	}
-	else if (lexeme.lex == "do")//Спец. оператор dowhile
+	else if (!strcmp(lexeme.lex, "do"))//Спец. оператор dowhile
 	{
 		fgl(lexeme);
 		dowhile();
 	}
-	else if (lexeme.lex == "{")//Составной оператор
+	else if (!strcmp(lexeme.lex, "{"))//Составной оператор
 	{
 		compositeoper();
 	}
 	else if (lexeme.type == 2 ||
-		lexeme.type == 3 || lexeme.lex == "+" || lexeme.lex == "-" || 
-		lexeme.lex == "!" || lexeme.lex == "(" ||
-		lexeme.lex == "true" || lexeme.lex == "false")//Оператор выражения
+		lexeme.type == 3 || !strcmp(lexeme.lex, "+") || !strcmp(lexeme.lex, "-") ||
+		!strcmp(lexeme.lex, "!") || !strcmp(lexeme.lex, "(") ||
+		!strcmp(lexeme.lex, "true") || !strcmp(lexeme.lex, "false"))//Оператор выражения
 	{
 		expression();
-		if (lexeme.lex != ";") error();
+		if (!strcmp(lexeme.lex, ";")) error();
 		fgl(lexeme);
 	}
 	else error();
@@ -162,7 +165,7 @@ void expression()
 	{
 		if (lexeme1.type == 0)
 			fgl(lexeme1);
-		if (lexeme1.lex == "=")
+		if (!strcmp(lexeme1.lex, "="))
 		{
 			lexeme1.type = 0;
 			fgl(lexeme);
@@ -174,7 +177,7 @@ void expression()
 void expression1()
 {
 	simpleexpression();
-	while (lexeme.lex == ">" || lexeme.lex == "<" || lexeme.lex == "!=" || lexeme.lex == ">=" || lexeme.lex == "<+" || lexeme.lex == "==")
+	while (!strcmp(lexeme.lex, ">") || !strcmp(lexeme.lex, "<") || !strcmp(lexeme.lex, "!=") || !strcmp(lexeme.lex, ">=") || !strcmp(lexeme.lex, "<+") || !strcmp(lexeme.lex, "=="))
 	{
 		fgl(lexeme);
 		simpleexpression();
@@ -183,7 +186,7 @@ void expression1()
 void simpleexpression()
 {
 	term();
-	while (lexeme.lex == "+" || lexeme.lex == "-" || lexeme.lex == "||")
+	while (!strcmp(lexeme.lex, "+") || !strcmp(lexeme.lex, "-") || !strcmp(lexeme.lex, "||"))
 	{
 		fgl(lexeme);
 		term();
@@ -192,7 +195,7 @@ void simpleexpression()
 void term()
 {
 	atom1();
-	while (lexeme.lex == "*" || lexeme.lex == "/" || lexeme.lex == "&&" || lexeme.lex == "div" || lexeme.lex == "%")
+	while (!strcmp(lexeme.lex, "*") || !strcmp(lexeme.lex, "/") || !strcmp(lexeme.lex, "&&") || !strcmp(lexeme.lex, "div") || !strcmp(lexeme.lex, "%"))
 	{
 		fgl(lexeme);
 		atom1();
@@ -201,17 +204,17 @@ void term()
 void atom1()
 {
 	atom();
-	if (lexeme.lex == "^")
+	if (!strcmp(lexeme.lex, "^"))
 	{
 		fgl(lexeme);
 		atom();
 	}
-	if (lexeme.lex == "++" || lexeme.lex == "--")
+	if (!strcmp(lexeme.lex, "++") || !strcmp(lexeme.lex, "--"))
 		fgl(lexeme);	
 }
 void atom()
 {
-	if (lexeme.lex == "(")
+	if (!strcmp(lexeme.lex, "("))
 	{
 		fgl(lexeme);
 		expression();
@@ -231,13 +234,13 @@ void atom()
 }
 void specialatom()
 {
-	if (lexeme.lex == "!")
+	if (!strcmp(lexeme.lex, "!"))
 	{
 		fgl(lexeme);
 		atom();
 		return;
 	}
-	else if (lexeme.lex == "true" || lexeme.lex == "false")
+	else if (!strcmp(lexeme.lex, "true") || !strcmp(lexeme.lex, "false"))
 	{
 		fgl(lexeme);
 		return;
@@ -246,7 +249,7 @@ void specialatom()
 }
 void constant()
 {
-	if (lexeme.lex == "+" || lexeme.lex == "-")
+	if (!strcmp(lexeme.lex, "+") || !strcmp(lexeme.lex, "-"))
 	{
 		fgl(lexeme);
 		if (lexeme.type != 3) error();
@@ -256,7 +259,7 @@ void constant()
 	else if (lexeme.type == 3)
 	{
 		fgl(lexeme);
-		if (lexeme.lex == ".")
+		if (!strcmp(lexeme.lex, "."))
 		{
 			fgl(lexeme);
 			if (lexeme.type != 3) error();
@@ -269,43 +272,43 @@ void constant()
 void dowhile()
 {
 	oper();
-	if (lexeme.lex != "while") error();
+	if (strcmp(lexeme.lex, "while")) error();
 	fgl(lexeme);
-	if (lexeme.lex != "(") error();
+	if (strcmp(lexeme.lex, "(")) error();
 	fgl(lexeme);
 	expression();
-	if (lexeme.lex != ")") error();
+	if (strcmp(lexeme.lex, ")")) error();
 	fgl(lexeme);
-	if (lexeme.lex != ";") error();
+	if (strcmp(lexeme.lex, ";")) error();
 	fgl(lexeme);
 }
 void cinout()
 {
 	do {
 		element();
-	} while (lexeme.lex == "<<" || lexeme.lex == ">>");
-	if (lexeme.lex != ";") error();
+	} while (!strcmp(lexeme.lex, "<<") || !strcmp(lexeme.lex, ">>"));
+	if (strcmp(lexeme.lex, ";")) error();
 	fgl(lexeme);
 }
 void element()
 {
-	if (lexeme.lex == ">>")
+	if (!strcmp(lexeme.lex, ">>"))
 	{
 		fgl(lexeme);
 		if (lexeme.type != 2) error();
 		fgl(lexeme);
 	}
-	else if (lexeme.lex == "<<")
+	else if (!strcmp(lexeme.lex, "<<"))
 	{
 		fgl(lexeme);
-		if (lexeme.lex == "endl")
+		if (!strcmp(lexeme.lex, "endl"))
 			fgl(lexeme);
-		else if (lexeme.lex == "\"")
+		else if (!strcmp(lexeme.lex, "\""))
 		{
 			fgl(lexeme);
 			if (lexeme.type != 7) error();
 			fgl(lexeme);
-			if (lexeme.lex != "\"") error();
+			if (strcmp(lexeme.lex, "\"")) error();
 			fgl(lexeme);
 		}
 		else expression();
@@ -314,14 +317,14 @@ void element()
 }
 void operfor()
 {
-	if (lexeme.lex != "(") error();
+	if (strcmp(lexeme.lex, "(")) error();
 	fgl(lexeme);
-	if (lexeme.lex == "int" || lexeme.lex == "double" || lexeme.lex == "bool")
+	if (!strcmp(lexeme.lex, "int") || !strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool"))
 		cfor1();
 	else if (lexeme.type == 2)
 	{
 		fgl(lexeme1);
-		if (lexeme1.lex == ":=")
+		if (!strcmp(lexeme1.lex, ":="))
 		{
 			lexeme1.type = 0;
 			fgl(lexeme);
@@ -330,10 +333,10 @@ void operfor()
 		else cfor2();
 	}
 	else cfor2();
-	if (lexeme.lex != ")") error();
+	if (strcmp(lexeme.lex, ")")) error();
 	fgl(lexeme);
 	oper();
-	if (lexeme.lex == "else")
+	if (!strcmp(lexeme.lex, "else"))
 	{
 		fgl(lexeme);
 		oper();
@@ -343,24 +346,24 @@ void cfor1()
 {
 	description();
 	expression();
-	if (lexeme.lex != ";") error();
+	if (strcmp(lexeme.lex, ";")) error();
 	fgl(lexeme);
 	expression();
 }
 void cfor2()
 {
 	expression();
-	if (lexeme.lex != ";") error();
+	if (strcmp(lexeme.lex, ";")) error();
 	fgl(lexeme);
 	expression(); 
-	if (lexeme.lex != ";") error();
+	if (strcmp(lexeme.lex, ";")) error();
 	fgl(lexeme);
 	expression();
 }
 void pfor()
 {
 	expression();
-	if (lexeme.lex != "to" && lexeme.lex != "downto") error();
+	if (strcmp(lexeme.lex, "to") && strcmp(lexeme.lex, "downto")) error();
 	fgl(lexeme);
 	expression();
 }
