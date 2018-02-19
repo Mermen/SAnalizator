@@ -2,288 +2,296 @@
 #include <fstream>
 #include <string>
 #include <cctype>
-#include <cstdlib>
 
 using namespace std;
 
-ifstream fin("return.txt"); 
+ifstream fin("base.txt");
 
-struct Lexeme
-{
-	int type;
-	string lex;
-} lexeme, lexeme1;
+ifstream pin("prog.txt");
 
-void fgl(Lexeme lexeme)
+ofstream rout("return.txt");
+
+bool if_off(string a)
 {
-	if (!fin.eof())
+	fin.clear();
+	fin.seekg(0, ios_base::beg);
+
+	string b;
+	char m;
+	for (int i = 0; i < 3; i++)
 	{
-		fin >> lexeme.lex;
-		fin >> lexeme.type;
-		fin >> lexeme.type;
+		fin >> b;
+	}
+	int flag = 0;
+	while (flag != 18)
+	{
+
+		fin >> b;
+		if (a == b)
+		{
+			return 1;
+		}
+		flag++;
+	}
+	return 0;
+}
+
+bool if_punctuation(char a)
+{
+	if (a == 44 || a == 46 || a == 59 || a == 39 || a == 34 || a == 58 || a == 123 || a == 125 || a == 40 || a == 41)
+	{
+		return true;
 	}
 	else
 	{
-		cout << "File is empty.";
-		system("pause");
-		exit(1);
+		return false;
 	}
 }
-void error()
+
+bool if_operation(string a)
 {
-	cout << "FATAL ERROR!!! Run away! There are 3 seconds before the exlosive. 2... 1..." << endl;
-	system("pause");
-	exit(1);
-}
-void program()
-{
-	while (lexeme.lex != "main")
-		description();
-	fgl(lexeme);
-	if (lexeme.lex != "(") error();
-	fgl(lexeme);
-	if (lexeme.lex != ")") error();
-	fgl(lexeme);
-	compositeoper();
-}
-void description()
-{
-	if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int")
+	fin.clear();
+	fin.seekg(0, ios_base::beg);
+	string c = "12";
+	char b;
+	while (c != "operations")
 	{
-		fgl(lexeme);
-		if (lexeme.lex == "main")
-			return;
-		if (lexeme.type != 2) error();
-		fgl(lexeme);
-		if (lexeme.lex == "=")
+		fin >> c;
+	}
+	b = fin.get();
+	b = fin.get();
+	int d = 0;
+
+	while (d != 24)
+	{
+
+		fin >> c;
+		if (a == c)
 		{
-			fgl(lexeme);
-			expression();
+			return 1;
 		}
-		while (lexeme.lex == ",")
-		{
-			fgl(lexeme);
-			if (lexeme.type != 2) error();
-			fgl(lexeme);
-			if (lexeme.lex == "=")
-			{
-				fgl(lexeme);
-				expression();
-			}
-		}
-		if (lexeme.lex != ";") error();
-		fgl(lexeme);
-		return;
+		b = fin.get();
+		d++;
 	}
-	else error();
+	return 0;
 }
-void compositeoper()
+
+enum States
 {
-	if (lexeme.lex != "{") error();
-	fgl(lexeme);
-	do
-	{
-		oper();
-	} while (lexeme.lex != "}");
-}
-void oper()
-{
-	if (lexeme.lex == "cinout")
-	{
+	start,
+	A,
+	B,
+	C,
+	D
+};
 
-	}
-	else if (lexeme.lex == "double" || lexeme.lex == "bool" || lexeme.lex == "int")
-	{
-		description();
-	}
-	else if (lexeme.lex == "for")
-	{
-
-	}
-	else if (lexeme.lex == "do")
-	{
-
-	}
-	else if (lexeme.lex == "{")
-	{
-
-	}
-	else if (/*expression*/true)
-	{
-
-	}
-}
-void expression()
-{
-
-}
-
-/*void logicValue()
-
-{
-
-if (lexeme.type == 1 && (lexeme.lex == "true" || lexeme.lex == "false"))
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void increment()
-
-{
-
-if (lexeme.type == 4 && (lexeme.lex == "++" || lexeme.lex == "--"))
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void assignment()
-
-{
-
-if (lexeme.type == 4 && lexeme.lex == "=")
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void multiplication()
-
-{
-
-if (lexeme.type == 4 && (lexeme.lex == "*" || lexeme.lex == "/" || lexeme.lex == "%" || lexeme.lex == "&&")) //ñþäà íóæíî çàñóíóòü div
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void addition()
-
-{
-
-if (lexeme.type == 4 && (lexeme.lex == "+" || lexeme.lex == "-" || lexeme.lex == "||"))
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void type()
-
-{
-
-if (lexeme.type == 2 && (lexeme.lex == "int" || lexeme.lex == "bool" || lexeme.lex == "double"))
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void name()
-
-{
-
-if (lexeme.type == 2)
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void direction()
-
-{
-
-if (lexeme.type == 1 && (lexeme.lex == "to" || lexeme.lex == "downto"))
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-void exponentiation()
-
-{
-
-if (lexeme.type == 4 && lexeme.lex == "^")
-
-{
-
-fgl(lexeme);
-
-return;
-
-}
-
-error();
-
-}
-
-*/
 
 int main()
 {
-	fgl(lexeme);
-	program();
+	string word;
+	char a;
+	int str = 1;
+	States  state = start;
+	while (pin.peek() != EOF)
+	{
+		switch (state)
+		{
+		case start:
+			a = pin.get();
+			word = a;
+			if (isalpha(a) || a == '_')
+			{
+				state = A;
+				if (pin.peek() == EOF)
+				{
+					if (if_off(word))
+					{
+						rout << str << " 1 " << word << "\n";
+						state = start;
+						break;
+					}
+					else
+					{
+						rout << str << " 2 " << word << "\n";
+						state = start;
+						break;
+					}
+				}
+			}
+			else if (isdigit(a))
+			{
+				state = B;
+				if (pin.peek() == EOF)
+				{
+					rout << str << " 3 " << word << "\n";
+					state = start;
+					break;
+				}
+			}
+			else if (a == 34 || a == 39)
+			{
+				rout << str << " 5 " << a << "\n";
+
+				state = C;
+			}
+			else if (if_punctuation(a) && pin.peek() != '=')
+			{
+				rout << str << " 5 " << a << "\n";
+			}
+			else if (a == ' ' || a == '	' || a == '\n')
+			{
+				if (a == '\n')
+				{
+					str++;
+				}
+			}
+			else if (a == '/'&&pin.peek() == '/')
+			{
+				while (pin.peek() != '\n'&&pin.peek() != EOF)
+				{
+					pin >> a;
+				}
+				a = pin.get();
+			}
+			else if (a == '/'&&pin.peek() == '*')
+			{
+				while (a != '*' || pin.peek() != '/')
+				{
+					a = pin.get();
+				}
+				a = pin.get();
+			}
+			else
+				if (if_operation(word) || word == ":")
+				{
+					if (pin.peek() == EOF)
+					{
+						rout << str << " 4 " << word << "\n";
+					}
+					state = D;
+				}
+				else if (true)
+				{
+					rout << str << " 6 " << word << "\n";
+				}
+			break;
+		case A:
+			if (true)
+			{
+				if (isalnum(pin.peek()) || pin.peek() == '_')
+				{
+					pin >> a;
+					word = word + a;
+					if (pin.peek() == EOF)
+					{
+						if (if_off(word))
+						{
+							rout << str << " 1 " << word << "\n";
+							state = start;
+							break;
+						}
+						else
+						{
+							if (word == "div")
+							{
+								rout << str << " 4 " << word << "\n";
+								state = start;
+							}
+							else
+							{
+								rout << str << " 2 " << word << "\n";
+								state = start;
+							}
+							break;
+						}
+					}
+				}
+				else if (if_off(word))
+				{
+					rout << str << " 1 " << word << "\n";
+					state = start;
+					break;
+				}
+				else
+				{
+					if (word == "div")
+					{
+						rout << str << " 4 " << word << "\n";
+						state = start;
+					}
+					else
+					{
+						rout << str << " 2 " << word << "\n";
+						state = start;
+					}
+					break;
+				}
+			}
+			break;
+		case B:
+			if (true)
+			{
+				if (isdigit(pin.peek()))
+				{
+					a = pin.get();
+					word = word + a;
+					if (pin.peek() == EOF)
+					{
+						rout << str << " 3 " << word << "\n";
+						state = start;
+						break;
+					}
+				}
+				else if (isalpha(pin.peek()))
+				{
+					cout << "error";
+					return 1;
+				}
+				else
+				{
+					rout << str << " 3 " << word << "\n";
+					state = start;
+					break;
+				}
+			}
+			break;
+		case C:
+			if (true)
+			{
+				string word;
+				while (pin.peek() != 34 && pin.peek() != 39)
+				{
+					a = pin.get();
+					word = word + a;
+				}
+				rout << str << " 7 " << word << "\n";
+				pin >> a;
+				rout << str << " 5 " << a << "\n";
+				state = start;
+			}
+			break;
+		case D:
+			if (true)
+			{
+				string q = word;
+				a = pin.peek();
+				word = word + a;
+				if (if_operation(word))
+				{
+					a = pin.get();
+					rout << str << " 4 " << word << "\n";
+					state = start;
+					break;
+				}
+				else
+				{
+					rout << str << " 4 " << word << "\n";
+					state = start;
+					break;
+				}
+			}
+			break;
+		}
+	}
+
 }

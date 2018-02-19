@@ -1,0 +1,9 @@
+bool a;
+int main;
+int main()
+{
+ a = a + a;
+do
+{ cinout << "               ";}
+while(a div a != 8.467);
+}
