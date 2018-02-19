@@ -6,13 +6,15 @@
 
 using namespace std;
 
-ifstream fin("return.txt");
+ifstream fin("c:\\Users\\menmen\\source\\repos\\Project1\\Project1\\return.txt");
 
 struct Lexeme
 {
-	int type = 0, str;
+	int type = 0, str = 0;
 	string lex;
 } lexeme, lexeme1;
+int str = 0;
+
 
 void fgl(Lexeme &lexeme);
 void error();
@@ -40,6 +42,7 @@ void fgl(Lexeme &lexeme)
 {
 	if (!fin.eof())
 	{
+		str = lexeme.str;
 		fin >> lexeme.lex;
 		fin >> lexeme.type;
 		fin >> lexeme.str;
@@ -53,7 +56,7 @@ void fgl(Lexeme &lexeme)
 }
 void error()
 {
-	cout << "There is a FATAL ERROR in string "<< lexeme.str <<"!!! Run away! There are 3 seconds before the exlosive. 2... 1..." << endl;
+	cout << "There is a FATAL ERROR in string "<< str <<"!!! The unexpected lexeme \""<< lexeme.lex <<"\" was entered." << endl;
 	system("pause");
 	exit(1);
 }

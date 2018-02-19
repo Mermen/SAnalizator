@@ -19,9 +19,4 @@
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="return.txt">
-      <Filter>Исходные файлы</Filter>
-    </Text>
-  </ItemGroup>
 </Project>
