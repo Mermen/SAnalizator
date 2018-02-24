@@ -275,7 +275,7 @@ int main()
 			{
 				string q = word;
 				a = pin.peek();
-				word = word + a;
+				if (!isspace(a)) word = word + a;
 				if (if_operation(word))
 				{
 					a = pin.get();
