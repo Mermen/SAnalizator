@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,37 +15,95 @@ ofstream rout("return.txt");
 
 ifstream git;
 
-struct TID
-{
-	char lex[10000];
-	TID *next = NULL;
 
-};
-
-struct L_TID
-{
-	TID *a=NULL;
-	L_TID *next=NULL;
-};
-L_TID *L_L=NULL;
 struct Lexeme
 {
 	int type = 0, str = 0;
 	char lex[10000];
 } lexeme, lexeme1;
 
+struct TID
+{
+	char name[10000];
+	int type = 0; // 1 - int, 2 - double, 3 - bool
+	TID *next = NULL;
+} *q = NULL;
+
+struct L_TID
+{
+	L_TID *next = NULL;
+	TID *head = NULL;
+} *L = NULL, *p = NULL;
+
+int depth = 1; 
+int type = 0;
+char name[10000];
+
 void add_id()
 {
-	if (L_L == NULL)
+	p = L;
+	for (int i = depth; i > 0; --i)
 	{
-		L_TID *R = new L_TID;
-		R->a = new TID;
+		if (p->head != NULL) q = p->head;
+		else q = NULL;
+		if (q != NULL)
+		{
+			while (true)
+			{
+				if (!strcmp(name, q->name))
+				{
+					cout << "String " << lexeme.str << ". Double description!" << endl;
+					system("pause");
+					exit(1);
+				}
+				if (q->next != NULL)
+					q = q->next;
+				else
+					break;
+			}
+		}
+		if (i != 1)
+			p = p->next;
+	}
+	if (p->head == NULL)
+	{
+		p->head = new TID;
+		q = p->head;
 	}
 	else
 	{
-
+		q->next = new TID;
+		q = q->next;
 	}
-	R->a->lex = lexeme.lex;
+	q->type = type;
+	strcpy(q->name, name);
+}
+
+int check_id()
+{
+	p = L;
+	for (int i = depth; i > 0; --i)
+	{
+		if (p->head != NULL) q = p->head;
+		else q = NULL;
+		if (q != NULL)
+		{
+			while (true)
+			{
+				if (!strcmp(name, q->name))
+					return q->type;
+				if (q->next != NULL)
+					q = q->next;
+				else
+					break;
+			}
+		}
+		if (i != 1)
+			p = p->next;
+	}
+	cout << "String " << lexeme.str << ". Using undescribed variable!" << endl;
+	system("pause");
+	exit(1);
 }
 
 bool if_off(string a)
@@ -123,10 +180,8 @@ enum States
 };
 
 
-char enter;
-
 void fgl(Lexeme &lexeme);
-void error();
+void synterror();
 void program();
 void description();
 void compositeoper();
@@ -173,7 +228,7 @@ void fgl(Lexeme &lexeme)
 		exit(1);
 	}
 }
-void error()
+void synterror()
 {
 	cout << "There is a FATAL ERROR in string " << lexeme.str << "!!! The unexpected lexeme \"" << lexeme.lex << "\" was entered." << endl;
 	system("pause");
@@ -184,9 +239,9 @@ void program()
 	while (strcmp(lexeme.lex, "("))
 		description();
 	fgl(lexeme);
-	if (strcmp(lexeme.lex, ")")) error();
+	if (strcmp(lexeme.lex, ")")) synterror();
 	fgl(lexeme);
-				compositeoper();
+	compositeoper();
 	cout << "There are no errors. The code is correct." << endl;
 	system("pause");
 }
@@ -194,9 +249,11 @@ void description()
 {
 	if (!strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool") || !strcmp(lexeme.lex, "int"))
 	{
-
+		if (!strcmp(lexeme.lex, "int")) type = 1;
+		else if (!strcmp(lexeme.lex, "double")) type = 2;
+		else type = 3;
 		fgl(lexeme);
-
+		strcpy(name, lexeme.lex);
 		if (!strcmp(lexeme.lex, "main"))
 		{
 			fgl(lexeme);
@@ -204,34 +261,37 @@ void description()
 				return;
 			else goto mark47;
 		}
-		if (lexeme.type != 2) error();
+		if (lexeme.type != 2) synterror();
 		fgl(lexeme);
-		mark47:
+	mark47:
 		if (!strcmp(lexeme.lex, "="))
 		{
 			fgl(lexeme);
 			expression();
 		}
+		add_id();
 		while (!strcmp(lexeme.lex, ","))
 		{
 			fgl(lexeme);
-			if (lexeme.type != 2) error();
+			strcpy(name, lexeme.lex);
+			if (lexeme.type != 2) synterror();
 			fgl(lexeme);
 			if (!strcmp(lexeme.lex, "="))
 			{
 				fgl(lexeme);
 				expression();
 			}
+			add_id();
 		}
-		if (strcmp(lexeme.lex, ";")) error();
+		if (strcmp(lexeme.lex, ";")) synterror();
 		fgl(lexeme);
 		return;
 	}
-	else error();
+	else synterror();
 }
 void compositeoper()
 {
-	if (strcmp(lexeme.lex, "{")) error();
+	if (strcmp(lexeme.lex, "{")) synterror();
 	fgl(lexeme);
 	do
 	{
@@ -270,10 +330,10 @@ void oper()
 		!strcmp(lexeme.lex, "true") || !strcmp(lexeme.lex, "false"))//Îïåðàòîð âûðàæåíèÿ
 	{
 		expression();
-		if (strcmp(lexeme.lex, ";")) error();
+		if (strcmp(lexeme.lex, ";")) synterror();
 		fgl(lexeme);
 	}
-	else error();
+	else synterror();
 }
 void expression()
 {
@@ -336,11 +396,13 @@ void atom()
 	{
 		fgl(lexeme);
 		expression();
-		if (lexeme.lex != ")") error();
+		if (lexeme.lex != ")") synterror();
 		fgl(lexeme);
 	}
 	else if (lexeme.type == 2)
 	{
+		strcpy(name, lexeme.lex);
+		check_id();
 		if (lexeme1.type != 0)
 		{
 			lexeme = lexeme1;
@@ -370,7 +432,7 @@ void constant()
 	if (!strcmp(lexeme.lex, "+") || !strcmp(lexeme.lex, "-"))
 	{
 		fgl(lexeme);
-		if (lexeme.type != 3) error();
+		if (lexeme.type != 3) synterror();
 		fgl(lexeme);
 		return;
 	}
@@ -380,32 +442,34 @@ void constant()
 		if (!strcmp(lexeme.lex, "."))
 		{
 			fgl(lexeme);
-			if (lexeme.type != 3) error();
+			if (lexeme.type != 3) synterror();
 			fgl(lexeme);
 			return;
 		}
 	}
-	else error();
+	else synterror();
 }
 void dowhile()
 {
+	depth++;
 	oper();
-	if (strcmp(lexeme.lex, "while")) error();
+	if (strcmp(lexeme.lex, "while")) synterror();
 	fgl(lexeme);
-	if (strcmp(lexeme.lex, "(")) error();
+	if (strcmp(lexeme.lex, "(")) synterror();
 	fgl(lexeme);
 	expression();
-	if (strcmp(lexeme.lex, ")")) error();
+	if (strcmp(lexeme.lex, ")")) synterror();
 	fgl(lexeme);
-	if (strcmp(lexeme.lex, ";")) error();
+	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
+	depth--;
 }
 void cinout()
 {
 	do {
 		element();
 	} while (!strcmp(lexeme.lex, "<<") || !strcmp(lexeme.lex, ">>"));
-	if (strcmp(lexeme.lex, ";")) error();
+	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
 }
 void element()
@@ -413,7 +477,7 @@ void element()
 	if (!strcmp(lexeme.lex, ">>"))
 	{
 		fgl(lexeme);
-		if (lexeme.type != 2) error();
+		if (lexeme.type != 2) synterror();
 		fgl(lexeme);
 	}
 	else if (!strcmp(lexeme.lex, "<<"))
@@ -425,11 +489,12 @@ void element()
 			fgl(lexeme);
 		else expression();
 	}
-	else error();
+	else synterror();
 }
 void operfor()
 {
-	if (strcmp(lexeme.lex, "(")) error();
+	depth++;
+	if (strcmp(lexeme.lex, "(")) synterror();
 	fgl(lexeme);
 	if (!strcmp(lexeme.lex, "int") || !strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool"))
 		cfor1();
@@ -445,37 +510,39 @@ void operfor()
 		else cfor2();
 	}
 	else cfor2();
-	if (strcmp(lexeme.lex, ")")) error();
+	if (strcmp(lexeme.lex, ")")) synterror();
 	fgl(lexeme);
 	oper();
+	//Delete L_TID
 	if (!strcmp(lexeme.lex, "else"))
 	{
 		fgl(lexeme);
 		oper();
 	}
+	depth--;
 }
 void cfor1()
 {
 	description();
 	expression();
-	if (strcmp(lexeme.lex, ";")) error();
+	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
 	expression();
 }
 void cfor2()
 {
 	expression();
-	if (strcmp(lexeme.lex, ";")) error();
+	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
 	expression();
-	if (strcmp(lexeme.lex, ";")) error();
+	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
 	expression();
 }
 void pfor()
 {
 	expression();
-	if (strcmp(lexeme.lex, "to") && strcmp(lexeme.lex, "downto")) error();
+	if (strcmp(lexeme.lex, "to") && strcmp(lexeme.lex, "downto")) synterror();
 	fgl(lexeme);
 	expression();
 }
