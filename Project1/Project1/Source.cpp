@@ -16,6 +16,39 @@ ofstream rout("return.txt");
 
 ifstream git;
 
+struct TID
+{
+	char lex[10000];
+	TID *next = NULL;
+
+};
+
+struct L_TID
+{
+	TID *a=NULL;
+	L_TID *next=NULL;
+};
+L_TID *L_L=NULL;
+struct Lexeme
+{
+	int type = 0, str = 0;
+	char lex[10000];
+} lexeme, lexeme1;
+
+void add_id()
+{
+	if (L_L == NULL)
+	{
+		L_TID *R = new L_TID;
+		R->a = new TID;
+	}
+	else
+	{
+
+	}
+	R->a->lex = lexeme.lex;
+}
+
 bool if_off(string a)
 {
 	fin.clear();
@@ -89,11 +122,7 @@ enum States
 	D
 };
 
-struct Lexeme
-{
-	int type = 0, str = 0;
-	char lex[10000];
-} lexeme, lexeme1;
+
 char enter;
 
 void fgl(Lexeme &lexeme);
@@ -124,8 +153,18 @@ void fgl(Lexeme &lexeme)
 	{
 		git >> lexeme.str;
 		git >> lexeme.type;
-		git.get();
-		git.getline(lexeme.lex, 10000);
+		if (lexeme.type != 7)
+		{
+			git.get();
+			git.getline(lexeme.lex, 10000);
+		}
+		else
+		{
+			git.get();
+			git.get();
+			git.getline(lexeme.lex, 10000, '\"');
+			git.get();
+		}
 	}
 	else
 	{
@@ -147,7 +186,7 @@ void program()
 	fgl(lexeme);
 	if (strcmp(lexeme.lex, ")")) error();
 	fgl(lexeme);
-	compositeoper();
+				compositeoper();
 	cout << "There are no errors. The code is correct." << endl;
 	system("pause");
 }
@@ -155,7 +194,9 @@ void description()
 {
 	if (!strcmp(lexeme.lex, "double") || !strcmp(lexeme.lex, "bool") || !strcmp(lexeme.lex, "int"))
 	{
+
 		fgl(lexeme);
+
 		if (!strcmp(lexeme.lex, "main"))
 		{
 			fgl(lexeme);
@@ -165,7 +206,7 @@ void description()
 		}
 		if (lexeme.type != 2) error();
 		fgl(lexeme);
-	mark47:
+		mark47:
 		if (!strcmp(lexeme.lex, "="))
 		{
 			fgl(lexeme);
@@ -195,7 +236,7 @@ void compositeoper()
 	do
 	{
 		oper();
-	} while (!strcmp(lexeme.lex, "}"));
+	} while (strcmp(lexeme.lex, "}"));
 	fgl(lexeme);
 }
 void oper()
@@ -229,7 +270,7 @@ void oper()
 		!strcmp(lexeme.lex, "true") || !strcmp(lexeme.lex, "false"))//Îïåðàòîð âûðàæåíèÿ
 	{
 		expression();
-		if (!strcmp(lexeme.lex, ";")) error();
+		if (strcmp(lexeme.lex, ";")) error();
 		fgl(lexeme);
 	}
 	else error();
@@ -380,14 +421,8 @@ void element()
 		fgl(lexeme);
 		if (!strcmp(lexeme.lex, "endl"))
 			fgl(lexeme);
-		else if (!strcmp(lexeme.lex, "\""))
-		{
+		else if (lexeme.type == 7)
 			fgl(lexeme);
-			if (lexeme.type != 7) error();
-			fgl(lexeme);
-			if (strcmp(lexeme.lex, "\"")) error();
-			fgl(lexeme);
-		}
 		else expression();
 	}
 	else error();
@@ -489,13 +524,13 @@ int main()
 			}
 			else if (a == 34 || a == 39)
 			{
-				rout << str << " 5 " << a << "\n";
+				rout << str << " 7 " << a;
 
 				state = C;
 			}
 			else if (if_punctuation(a) && pin.peek() != '=')
 			{
-				rout << str << " 5 " << a << "\n";
+				rout << str << " 5 " << a << '\n';
 			}
 			else if (a == ' ' || a == '	' || a == '\n')
 			{
@@ -622,10 +657,14 @@ int main()
 				{
 					a = pin.get();
 					word = word + a;
+					if (a == '\n')
+					{
+						str++;
+					}
 				}
-				rout << str << " 7 " << word << "\n";
+				rout << word;
 				pin >> a;
-				rout << str << " 5 " << a << "\n";
+				rout << a << "\n";
 				state = start;
 			}
 			break;
@@ -634,7 +673,7 @@ int main()
 			{
 				string q = word;
 				a = pin.peek();
-				word = word + a;
+				if (!isspace(a)) word = word + a;
 				if (if_operation(word))
 				{
 					a = pin.get();
