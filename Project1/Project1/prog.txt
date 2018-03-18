@@ -1,9 +1,23 @@
-bool a;
 int main;
 int main()
 {
- a = a + a;
-do
-{ cinout << "               ";}
-while(a div a != 8.467);
+	int a;
+	a = a + a;
+	do
+	{
+		int b;
+		cinout << "               " >> b;
+		for (i := b - main to b + main)
+			for (7; 7 < 8; b--)
+			{
+				a++;
+				int m;
+			}
+			else
+			{
+				a = a ^ main;
+			}
+	}
+	while(main == a + 8);
+	cinout >> a;
 }
