@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -27,13 +29,13 @@ struct TID
 	char name[10000];
 	int type = 0; // 1 - int, 2 - double, 3 - bool
 	TID *next = NULL;
-} *q = NULL;
+} *r = NULL, *s= NULL;
 
 struct L_TID
 {
 	L_TID *next = NULL;
 	TID *head = NULL;
-} *L = NULL, *p = NULL;
+} *L = new L_TID, *p = NULL, *q = NULL;
 
 int depth = 1; 
 int type = 0;
@@ -44,20 +46,20 @@ void add_id()
 	p = L;
 	for (int i = depth; i > 0; --i)
 	{
-		if (p->head != NULL) q = p->head;
-		else q = NULL;
-		if (q != NULL)
+		if (p->head != NULL) r = p->head;
+		else r = NULL;
+		if (r != NULL)
 		{
 			while (true)
 			{
-				if (!strcmp(name, q->name))
+				if (!strcmp(name, r->name))
 				{
 					cout << "String " << lexeme.str << ". Double description!" << endl;
 					system("pause");
 					exit(1);
 				}
-				if (q->next != NULL)
-					q = q->next;
+				if (r->next != NULL)
+					r = r->next;
 				else
 					break;
 			}
@@ -68,15 +70,15 @@ void add_id()
 	if (p->head == NULL)
 	{
 		p->head = new TID;
-		q = p->head;
+		r = p->head;
 	}
 	else
 	{
-		q->next = new TID;
-		q = q->next;
+		r->next = new TID;
+		r = r->next;
 	}
-	q->type = type;
-	strcpy(q->name, name);
+	r->type = type;
+	strcpy(r->name, name);
 }
 
 int check_id()
@@ -84,16 +86,16 @@ int check_id()
 	p = L;
 	for (int i = depth; i > 0; --i)
 	{
-		if (p->head != NULL) q = p->head;
-		else q = NULL;
-		if (q != NULL)
+		if (p->head != NULL) r = p->head;
+		else r = NULL;
+		if (r != NULL)
 		{
 			while (true)
 			{
-				if (!strcmp(name, q->name))
-					return q->type;
-				if (q->next != NULL)
-					q = q->next;
+				if (!strcmp(name, r->name))
+					return r->type;
+				if (r->next != NULL)
+					r = r->next;
 				else
 					break;
 			}
@@ -105,6 +107,172 @@ int check_id()
 	system("pause");
 	exit(1);
 }
+
+void addDepth()
+{
+	p = L;
+	for (int i = depth; i > 1; i--)
+		p = p->next;
+	p->next = new L_TID;
+}
+
+void deleteDepth()
+{
+	p = L;
+	for (int i = depth; i > 1; i--)
+		p = p->next;
+	q = p->next;
+	p->next = NULL;
+	r = q->head;
+	delete q;
+	while (r != NULL)
+	{
+		s = r->next;
+		delete r;
+		r = s;
+	}
+}
+
+struct stack
+{
+	int type = 0; // 1 - int, 2 - double, 3 - bool, 4 - operation
+	char oper[3];
+	stack *next;
+} *H = NULL, *m = NULL;
+
+void push(int t)
+{
+	m = new stack;
+	strcpy(m->oper, name);
+	m->type = t;
+	m->next = H;
+	H = m;
+}
+void pop()
+{
+	*m = *H;
+	H = H->next;
+	m->next = NULL;
+}
+void peek()
+{
+	*m = *H;
+	m->next = NULL;
+}
+void clear()
+{
+	while (H != NULL)
+	{
+		m = H;
+		H = H->next;
+		delete m;
+	}
+}
+void check_op()
+{
+	int t1, t2, t, ret;
+	char op[10];
+	pop();
+	t2 = m->type;
+	pop();
+	strcpy(op, m->oper);
+	pop();
+	t1 = m->type;
+	if (!strcmp(op, "&&") || !strcmp(op, "||"))
+	{
+		t = 3;
+		ret = 3;
+	}
+	else if (!strcmp(op, "%") || !strcmp(op, "div"))
+	{
+		t = 1;
+		ret = 1;
+	}
+	else if (!strcmp(op, "+") || !strcmp(op, "-") || !strcmp(op, "*") || !strcmp(op, "/") || !strcmp(op, "^") || !strcmp(op, "="))
+	{
+		ret = t = t1;
+	}
+	else
+	{
+		ret = 3;
+		if (t1 != t2)
+		{
+			cout << "String " << lexeme.str << ". Disperancy of operands." << endl;
+			system("pause");
+			exit(1);
+		}
+		else
+			push(ret);
+		return;
+	}
+	if (t1 == t2 && t1 == t)
+		push(ret);
+	else
+	{
+		cout << "String " << lexeme.str << ". Disperancy of operands and operation." << endl;
+		system("pause");
+		exit(1);
+	}
+}
+void check_inc()
+{
+	int t;
+	char op[10];
+	pop();
+	strcpy(op, m->oper);
+	pop();
+	t = m->type;
+	if (t <= 2)
+		push(t);
+	else 
+	{
+		cout << "String " << lexeme.str << ". Disperancy of operand and operation." << endl;
+		system("pause");
+		exit(1);
+	}
+}
+void check_not()
+{
+	int t;
+	char op[10];
+	pop();
+	t = m->type;
+	pop();
+	strcpy(op, m->oper);
+	if (t == 3)
+		push(t);
+	else
+	{
+		cout << "String " << lexeme.str << ". Disperancy of operand and operation." << endl;
+		system("pause");
+		exit(1);
+	}
+}
+void eq_bool()
+{
+	int t;
+	pop();
+	t = m->type;
+	if (t != 3)
+	{
+		cout << "String " << lexeme.str << ". There is no a boolean expression in the special operator." << endl;
+		system("pause");
+		exit(1);
+	}
+}
+void eq_int()
+{
+	int t;
+	pop();
+	t = m->type;
+	if (t != 1)
+	{
+		cout << "String " << lexeme.str << ". There is no a integer expression in the special operator pfor." << endl;
+		system("pause");
+		exit(1);
+	}
+}
+
 
 bool if_off(string a)
 {
@@ -266,10 +434,13 @@ void description()
 	mark47:
 		if (!strcmp(lexeme.lex, "="))
 		{
+			push(type);
 			fgl(lexeme);
 			expression();
+			check_op();
 		}
 		add_id();
+		
 		while (!strcmp(lexeme.lex, ","))
 		{
 			fgl(lexeme);
@@ -341,13 +512,19 @@ void expression()
 		expression1();
 	else
 	{
+		
 		if (lexeme1.type == 0)
 			fgl(lexeme1);
 		if (!strcmp(lexeme1.lex, "="))
 		{
+			strcpy(name, lexeme.lex);
+			push(check_id());
+			strcpy(name, lexeme1.lex);
+			push(4);
 			lexeme1.type = 0;
 			fgl(lexeme);
 			expression();
+			check_op();
 		}
 		else expression1();
 	}
@@ -355,10 +532,13 @@ void expression()
 void expression1()
 {
 	simpleexpression();
-	while (!strcmp(lexeme.lex, ">") || !strcmp(lexeme.lex, "<") || !strcmp(lexeme.lex, "!=") || !strcmp(lexeme.lex, ">=") || !strcmp(lexeme.lex, "<+") || !strcmp(lexeme.lex, "=="))
+	while (!strcmp(lexeme.lex, ">") || !strcmp(lexeme.lex, "<") || !strcmp(lexeme.lex, "!=") || !strcmp(lexeme.lex, ">=") || !strcmp(lexeme.lex, "<=") || !strcmp(lexeme.lex, "=="))
 	{
+		strcpy(name, lexeme.lex);
+		push(4);
 		fgl(lexeme);
 		simpleexpression();
+		check_op();
 	}
 }
 void simpleexpression()
@@ -366,8 +546,11 @@ void simpleexpression()
 	term();
 	while (!strcmp(lexeme.lex, "+") || !strcmp(lexeme.lex, "-") || !strcmp(lexeme.lex, "||"))
 	{
+		strcpy(name, lexeme.lex);
+		push(4);
 		fgl(lexeme);
 		term();
+		check_op();
 	}
 }
 void term()
@@ -375,8 +558,11 @@ void term()
 	atom1();
 	while (!strcmp(lexeme.lex, "*") || !strcmp(lexeme.lex, "/") || !strcmp(lexeme.lex, "&&") || !strcmp(lexeme.lex, "div") || !strcmp(lexeme.lex, "%"))
 	{
+		strcpy(name, lexeme.lex);
+		push(4);
 		fgl(lexeme);
 		atom1();
+		check_op();
 	}
 }
 void atom1()
@@ -384,11 +570,19 @@ void atom1()
 	atom();
 	if (!strcmp(lexeme.lex, "^"))
 	{
+		strcpy(name, lexeme.lex);
+		push(4);
 		fgl(lexeme);
 		atom();
+		check_op();
 	}
-	if (!strcmp(lexeme.lex, "++") || !strcmp(lexeme.lex, "--"))
+	else if (!strcmp(lexeme.lex, "++") || !strcmp(lexeme.lex, "--"))
+	{
+		strcpy(name, lexeme.lex);
+		push(4);
+		check_inc();
 		fgl(lexeme);
+	}
 }
 void atom()
 {
@@ -402,7 +596,7 @@ void atom()
 	else if (lexeme.type == 2)
 	{
 		strcpy(name, lexeme.lex);
-		check_id();
+		push(check_id());
 		if (lexeme1.type != 0)
 		{
 			lexeme = lexeme1;
@@ -416,12 +610,16 @@ void specialatom()
 {
 	if (!strcmp(lexeme.lex, "!"))
 	{
+		strcpy(name, lexeme.lex);
+		push(4);
 		fgl(lexeme);
 		atom();
+		check_not();
 		return;
 	}
 	else if (!strcmp(lexeme.lex, "true") || !strcmp(lexeme.lex, "false"))
 	{
+		push(3);
 		fgl(lexeme);
 		return;
 	}
@@ -433,6 +631,7 @@ void constant()
 	{
 		fgl(lexeme);
 		if (lexeme.type != 3) synterror();
+		push(1);
 		fgl(lexeme);
 		return;
 	}
@@ -443,14 +642,17 @@ void constant()
 		{
 			fgl(lexeme);
 			if (lexeme.type != 3) synterror();
+			push(2);
 			fgl(lexeme);
 			return;
 		}
+		push(1);
 	}
 	else synterror();
 }
 void dowhile()
 {
+	addDepth();
 	depth++;
 	oper();
 	if (strcmp(lexeme.lex, "while")) synterror();
@@ -459,10 +661,12 @@ void dowhile()
 	fgl(lexeme);
 	expression();
 	if (strcmp(lexeme.lex, ")")) synterror();
+	eq_bool();
 	fgl(lexeme);
 	if (strcmp(lexeme.lex, ";")) synterror();
 	fgl(lexeme);
 	depth--;
+	deleteDepth();
 }
 void cinout()
 {
@@ -478,6 +682,8 @@ void element()
 	{
 		fgl(lexeme);
 		if (lexeme.type != 2) synterror();
+		strcpy(name, lexeme.lex);
+		check_id();
 		fgl(lexeme);
 	}
 	else if (!strcmp(lexeme.lex, "<<"))
@@ -493,6 +699,7 @@ void element()
 }
 void operfor()
 {
+	addDepth();
 	depth++;
 	if (strcmp(lexeme.lex, "(")) synterror();
 	fgl(lexeme);
@@ -503,6 +710,9 @@ void operfor()
 		fgl(lexeme1);
 		if (!strcmp(lexeme1.lex, ":="))
 		{
+			strcpy(name, lexeme.lex);
+			type = 1;
+			add_id();
 			lexeme1.type = 0;
 			fgl(lexeme);
 			pfor();
@@ -513,19 +723,24 @@ void operfor()
 	if (strcmp(lexeme.lex, ")")) synterror();
 	fgl(lexeme);
 	oper();
-	//Delete L_TID
+	depth--;
+	deleteDepth();
 	if (!strcmp(lexeme.lex, "else"))
 	{
+		addDepth();
+		depth++;
 		fgl(lexeme);
 		oper();
+		depth--;
+		deleteDepth();
 	}
-	depth--;
 }
 void cfor1()
 {
 	description();
 	expression();
 	if (strcmp(lexeme.lex, ";")) synterror();
+	eq_bool();
 	fgl(lexeme);
 	expression();
 }
@@ -536,15 +751,18 @@ void cfor2()
 	fgl(lexeme);
 	expression();
 	if (strcmp(lexeme.lex, ";")) synterror();
+	eq_bool();
 	fgl(lexeme);
 	expression();
 }
 void pfor()
 {
 	expression();
+	eq_int();
 	if (strcmp(lexeme.lex, "to") && strcmp(lexeme.lex, "downto")) synterror();
 	fgl(lexeme);
 	expression();
+	eq_int();
 }
 
 int main()
